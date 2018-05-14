@@ -1,0 +1,37 @@
+{% extends "@FOSUser/layout.html.twig" %}
+
+{% block main_content %}
+
+	<span class="grey-text text-darken-4">MyStreamer</span>
+	<a href="/camera/new" class="btn-floating btn-large waves-effect waves-light waves-light"><i class="material-icons">add</i></a>
+    <table class="striped">
+        <thead>
+          	<tr>
+              	<th class="orange-text text-darken-3">Имя</th>
+              	<th class="orange-text text-darken-3">URL</th>
+              	<th class="orange-text text-darken-3">Действия</th>
+          	</tr>
+        </thead>
+
+        <tbody>
+        	{% for camera in cameras %}
+        		<tr>
+            		<td>camera.name</td>
+            		<td>camera.link</td>
+            		<td>
+            			<a href="/camera/update/{camera.id}">
+            				<button class="btn waves-effect waves-light" type="submit" name="action">
+            					<i class="material-icons right">edit</i>
+            				</button>
+            			</a>
+            			<a href="/camera/delete/{camera.id}">
+            				<button class="btn waves-effect waves-light" type="submit" name="action">
+            					<i class="material-icons right">delete</i>
+            				</button>
+            			</a>
+            		</td>
+          		</tr>
+    		{% endfor %}
+        </tbody>
+    </table>
+{% endblock main_content %}
