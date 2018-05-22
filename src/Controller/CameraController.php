@@ -17,6 +17,12 @@ class CameraController extends Controller
      */
     public function index()
     {
+        $user = $this->get('security.token_storage')->getToken()->getUser();
+        
+        if ($user == "anon.") {
+            return $this->redirect('/login');
+        }
+
         $cameras = $this->getDoctrine()
             ->getRepository(Camera::class)
             ->findAll();
@@ -29,6 +35,13 @@ class CameraController extends Controller
      */
     public function new(Request $request)
     {
+        $user = $this->get('security.token_storage')->getToken()->getUser();
+        
+        if ($user == "anon.") {
+            return $this->redirect('/login');
+        }
+
+        $entityManager = $this->getDoctrine()->getManager();
         $camera = new Camera();
 
         $form = $this->createFormBuilder($camera)
@@ -44,7 +57,11 @@ class CameraController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $task = $form->getData();
+            $camera = $form->getData();
+
+            $entityManager->persist($camera);
+
+            $entityManager->flush();
 
             return $this->redirectToRoute('cameras');
         }
@@ -56,13 +73,18 @@ class CameraController extends Controller
     }
 
     /**
-     * @Route("/camera/{id}", name="camera_show")
+     * @Route("/camera/edit/{id}")
      */
-    public function show($id)
+    public function update(Request $request, $id)
     {
-        $camera = $this->getDoctrine()
-            ->getRepository(Camera::class)
-            ->find($id);
+        $user = $this->get('security.token_storage')->getToken()->getUser();
+        
+        if ($user == "anon.") {
+            return $this->redirect('/login');
+        }
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $camera = $entityManager->getRepository(Camera::class)->find($id);
 
         if (!$camera) {
             throw $this->createNotFoundException(
@@ -70,29 +92,59 @@ class CameraController extends Controller
             );
         }
 
-        return $this->render('camera/show.html.twig', ['camera' => $camera]);
+
+        $form = $this->createFormBuilder($camera)
+            ->add('name', TextType::class)
+            ->add('link', TextType::class)
+            ->add('save', SubmitType::class, [
+                'label' => 'Сохранить',
+                'attr' => ['class' => 'waves-effect waves-light btn'],
+            ])
+            ->getForm();
+
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $cameraUpd = $form->getData();
+
+            $camera->setName($cameraUpd->getName());
+            $camera->setLink($cameraUpd->getLink());
+
+            $entityManager->flush();
+
+            return $this->redirectToRoute('cameras');
+        }
+
+
+        return $this->render('camera/new.html.twig', array(
+            'form' => $form->createView(),
+        ));
     }
+
+    /**
+     * @Route("/camera/delete/{id}")
+     */
+    public function delete(Request $request, $id)
+    {
+        $user = $this->get('security.token_storage')->getToken()->getUser();
+        
+        if ($user == "anon.") {
+            return $this->redirect('/login');
+        }
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $camera = $entityManager->getRepository(Camera::class)->find($id);
+
+        if (!$camera) {
+            throw $this->createNotFoundException(
+                'No camera found for id '.$id
+            );
+        }
+
+        $entityManager->remove($camera);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('cameras');
+    }    
 }
-
-
-// $repository = $this->getDoctrine()->getRepository(Product::class);
-
-// // look for a single Product by its primary key (usually "id")
-// $product = $repository->find($id);
-
-// // look for a single Product by name
-// $product = $repository->findOneBy(['name' => 'Keyboard']);
-// // or find by name and price
-// $product = $repository->findOneBy([
-//     'name' => 'Keyboard',
-//     'price' => 1999,
-// ]);
-
-// // look for multiple Product objects matching the name, ordered by price
-// $products = $repository->findBy(
-//     ['name' => 'Keyboard'],
-//     ['price' => 'ASC']
-// );
-
-// // look for *all* Product objects
-//$products = $repository->findAll();

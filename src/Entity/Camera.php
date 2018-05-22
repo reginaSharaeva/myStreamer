@@ -17,6 +17,7 @@ class Camera
      *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
@@ -37,14 +38,14 @@ class Camera
     /**
      * @var string
      *
-     * @ORM\Column(name="proxy_link", type="string", length=255)
+     * @ORM\Column(name="proxy_link", type="string", length=255, nullable=true)
      */
     private $proxy_link;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="process_id", type="integer")
+     * @ORM\Column(name="process_id", type="integer", nullable=true)
      */
     private $process_id;
 

@@ -2,7 +2,7 @@
 
 {% block main_content %}
 
-	<span class="grey-text text-darken-4">MyStreamer</span>
+	<h4 class="grey-text text-darken-4">Мои камеры</h4><br/>
 	<a href="/camera/new" class="btn-floating btn-large waves-effect waves-light waves-light"><i class="material-icons">add</i></a>
     <table class="striped">
         <thead>
@@ -16,15 +16,15 @@
         <tbody>
         	{% for camera in cameras %}
         		<tr>
-            		<td>camera.name</td>
-            		<td>camera.link</td>
+            		<td>{{camera.name}}</td>
+            		<td>{{camera.link}}</td>
             		<td>
-            			<a href="/camera/update/{camera.id}">
+            			<a href="/camera/edit/{{camera.id}}">
             				<button class="btn waves-effect waves-light" type="submit" name="action">
             					<i class="material-icons right">edit</i>
             				</button>
             			</a>
-            			<a href="/camera/delete/{camera.id}">
+            			<a href="/camera/delete/{{camera.id}}">
             				<button class="btn waves-effect waves-light" type="submit" name="action">
             					<i class="material-icons right">delete</i>
             				</button>
