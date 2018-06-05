@@ -23,3 +23,13 @@ services:
             - php
         volumes:
             - ./logs/nginx/:/var/log/nginx:cached
+    rtmp:
+        build: rtmp
+        ports: 
+            - '1935:1935'
+        links:
+            - nginx  
+        volumes_from:
+            - nginx 
+        volumes:
+            - ./logs/nginx/:/var/log/nginx:cached         
